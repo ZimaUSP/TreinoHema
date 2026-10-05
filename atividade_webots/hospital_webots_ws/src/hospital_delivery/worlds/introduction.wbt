@@ -1,0 +1,146 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "../protos/HospitalRobot.proto"
+
+WorldInfo {
+  info [
+    "Atividade introdutória de robótica móvel hospitalar"
+    "Controlador nativo do Webots, sem ROS 2"
+  ]
+  title "Introdução ao Webots - movimento em linha reta"
+  contactProperties [
+    ContactProperties {
+      material1 "wheel"
+      material2 "floor"
+      coulombFriction [
+        1.4
+      ]
+    }
+    ContactProperties {
+      material1 "caster"
+      material2 "floor"
+      coulombFriction [
+        0.08
+      ]
+    }
+  ]
+}
+Viewpoint {
+  orientation 0.25936874534815774 -0.10104058569309507 -0.9604783464395846 3.85767335021511
+  position 3.099485097047204 -1.621526058409685 1.6964315736739966
+  followType "Mounted Shot"
+}
+Background {
+  skyColor [
+    0.86 0.91 0.97
+  ]
+}
+DirectionalLight {
+  direction -0.4 -0.5 -1
+  intensity 1.2
+  castShadows TRUE
+}
+Solid {
+  translation 0 0 -0.025
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.72 0.75 0.78
+        roughness 0.9
+        metalness 0
+      }
+      geometry Box {
+        size 5 3 0.05
+      }
+    }
+  ]
+  name "floor"
+  contactMaterial "floor"
+  boundingObject Box {
+    size 5 3 0.05
+  }
+}
+Pose {
+  translation -1.5 0 0.006
+  children [
+    Shape {
+      appearance DEF START_APPEARANCE PBRAppearance {
+        baseColor 0.65 0.1 0.16
+        roughness 0.65
+        metalness 0
+      }
+      geometry Box {
+        size 0.05 1.1 0.012
+      }
+    }
+  ]
+}
+Pose {
+  translation -1 0 0.006
+  children [
+    Shape {
+      appearance DEF MARKER_APPEARANCE PBRAppearance {
+        baseColor 0.96 0.76 0.12
+        roughness 0.65
+        metalness 0
+      }
+      geometry Box {
+        size 0.025 0.9 0.012
+      }
+    }
+  ]
+}
+Pose {
+  translation -0.5 0 0.006
+  children [
+    Shape {
+      appearance USE MARKER_APPEARANCE
+      geometry Box {
+        size 0.025 0.9 0.012
+      }
+    }
+  ]
+}
+Pose {
+  translation 0.5 0 0.006
+  children [
+    Shape {
+      appearance USE MARKER_APPEARANCE
+      geometry Box {
+        size 0.025 0.9 0.012
+      }
+    }
+  ]
+}
+Pose {
+  translation 1 0 0.006
+  children [
+    Shape {
+      appearance USE MARKER_APPEARANCE
+      geometry Box {
+        size 0.025 0.9 0.012
+      }
+    }
+  ]
+}
+HospitalRobot {
+  hidden position_0_0 15.128639884837321
+  hidden position_0_1 15.12849799327961
+  hidden position_0_2 -31.41592721969615
+  hidden position2_0_2 0.7052795999523027
+  hidden position3_0_2 1.8509858740861284e-07
+  hidden linearVelocity_0 -5.223623944992251e-16 -1.1899242269046435e-16 -1.7053025658242405e-16
+  hidden angularVelocity_0 1.1129614991406366e-15 1.4474542473467702e-15 6.518960930915119e-17
+  hidden rotation_1 0.20621932182399685 0.6919080832419672 -0.6919080832385743 2.7348557293030185
+  hidden linearVelocity_1 6.672776730034915e-17 1.1608158993159946e-16 -7.112149835429828e-17
+  hidden angularVelocity_1 4.0827389071215104e-15 1.2802712365190834e-15 -8.1388819481472e-18
+  hidden rotation_2 0.20627049755244503 0.6919004559342905 -0.6919004559309003 2.7347575539283966
+  hidden linearVelocity_2 9.374533252390545e-17 -1.803397908762082e-16 6.394177750578402e-16
+  hidden angularVelocity_2 2.262951932610931e-14 1.4230837701198329e-15 2.0304080845849188e-16
+  hidden rotation_3 8.364664874357303e-07 -0.9999999999996461 9.042213247881558e-08 5.577905707227006
+  hidden linearVelocity_3 3.1443536698382545e-17 -1.261376983089545e-18 2.220446049250313e-16
+  hidden angularVelocity_3 5.412956003442539e-17 1.3493387228621487e-15 -7.876887689697528e-33
+  translation 0.7554863116516862 0.046257437293465424 -0.0014946731041307337
+  rotation -3.575263548666649e-07 0.9999998627780188 0.0005238738546513536 0.0013647902431543144
+  controller "straight_line_webots"
+}

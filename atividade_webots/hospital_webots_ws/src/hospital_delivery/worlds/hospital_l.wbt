@@ -1,0 +1,189 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "../protos/HospitalRobot.proto"
+
+WorldInfo {
+  info [
+    "Sala de coleta para laboratório de análises"
+    "Integração Webots e ROS 2"
+  ]
+  title "Entrega hospitalar - trajeto em L"
+  contactProperties [
+    ContactProperties {
+      material1 "wheel"
+      material2 "floor"
+      coulombFriction [
+        1.4
+      ]
+    }
+    ContactProperties {
+      material1 "caster"
+      material2 "floor"
+      coulombFriction [
+        0.08
+      ]
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.29295296105955676 -0.04967485289419893 0.9548355730681475 3.4253846378903656
+  position 5.539537561055058 2.210674388855796 4.726421604122602
+  follow "hospital_robot"
+}
+Background {
+  skyColor [
+    0.86 0.91 0.97
+  ]
+}
+DirectionalLight {
+  direction -0.4 -0.5 -1
+  intensity 1.2
+  castShadows TRUE
+}
+Solid {
+  translation 0 0 -0.025
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.76 0.78 0.8
+        roughness 0.92
+        metalness 0
+      }
+      geometry Box {
+        size 6 5 0.05
+      }
+    }
+  ]
+  name "hospital floor"
+  contactMaterial "floor"
+  boundingObject Box {
+    size 6 5 0.05
+  }
+}
+Pose {
+  translation -1.8 -1 0.006
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.68 0.08 0.16
+        roughness 0.7
+        metalness 0
+      }
+      geometry Box {
+        size 0.55 0.55 0.012
+      }
+    }
+  ]
+}
+Pose {
+  translation 0.2 0.5 0.006
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.1 0.62 0.28
+        roughness 0.7
+        metalness 0
+      }
+      geometry Box {
+        size 0.55 0.55 0.012
+      }
+    }
+  ]
+}
+Solid {
+  translation -0.925 -1.5 0.25
+  children [
+    DEF WALL_SHAPE_LONG Shape {
+      appearance DEF WALL_APPEARANCE PBRAppearance {
+        baseColor 0.9 0.92 0.94
+        roughness 0.75
+        metalness 0
+      }
+      geometry Box {
+        size 3.15 0.08 0.5
+      }
+    }
+  ]
+  name "south wall"
+  boundingObject Box {
+    size 3.15 0.08 0.5
+  }
+}
+Solid {
+  translation -1.375 -0.5 0.25
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 2.25 0.08 0.5
+      }
+    }
+  ]
+  name "north wall first corridor"
+  boundingObject Box {
+    size 2.25 0.08 0.5
+  }
+}
+Solid {
+  translation -2.5 -1 0.25
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 0.08 1.08 0.5
+      }
+    }
+  ]
+  name "collection room end wall"
+  boundingObject Box {
+    size 0.08 1.08 0.5
+  }
+}
+Solid {
+  translation -0.25 0.25 0.25
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 0.08 1.5 0.5
+      }
+    }
+  ]
+  name "west wall second corridor"
+  boundingObject Box {
+    size 0.08 1.5 0.5
+  }
+}
+Solid {
+  translation 0.65 -0.25 0.25
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 0.08 2.5 0.5
+      }
+    }
+  ]
+  name "east wall second corridor"
+  boundingObject Box {
+    size 0.08 2.5 0.5
+  }
+}
+Solid {
+  translation 0.2 1 0.25
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 0.98 0.08 0.5
+      }
+    }
+  ]
+  name "laboratory end wall"
+  boundingObject Box {
+    size 0.98 0.08 0.5
+  }
+}
+HospitalRobot {
+  translation -1.8 -1 0
+}

@@ -1,0 +1,268 @@
+#VRML_SIM R2023b utf8
+# template language: javascript
+# Hospital delivery robot: tracao diferencial com rodas recuadas,
+# 1 caster frontal (esfera livre em BallJoint), lidar apoiado no topo do corpo.
+# Nao precisa de ContactProperties no mundo.
+
+PROTO HospitalRobot [
+  field SFVec3f    translation    0 0 0
+  field SFRotation rotation       0 0 1 0
+  field SFString   name           "hospital_robot"
+  field SFString   controller     "<extern>"
+  field MFString   controllerArgs []
+  field SFBool     supervisor     FALSE
+  field SFVec3f    bodySize       0.42 0.28 0.16
+  field SFColor    bodyColor      0.12 0.48 0.82
+  field SFFloat    bodyMass       4.0   # chassi + carga + lidar (sem caster e rodas)
+  field MFNode     extensionSlot  []
+]
+{
+%<
+  const r = (v) => Math.round(v * 100000) / 100000;
+
+  const size = fields.bodySize.value;
+  const wheelR = 0.05;
+  const wheelW = 0.04;
+  const clearance = 0.05;                       // fundo do corpo ao chao
+  const bodyZ = clearance + size.z / 2;
+  const topZ = clearance + size.z;
+
+  // rodas de tracao recuadas; caster unico na frente
+  const wheelX = -size.x * 0.24;                // ~ -0.10
+  const wheelY = size.y / 2 + 0.005 + wheelW / 2;
+  const casterR = 0.025;                        // topo da esfera = fundo do corpo
+  const casterX = size.x / 2 - 0.05;            // ~ +0.16
+  // centro de massa entre eixo e caster, ~25% do peso no caster
+  const comX = wheelX + 0.25 * (casterX - wheelX);
+  const comZ = clearance + size.z * 0.375;
+
+  // caixa de carga
+  const cargoH = 0.07;
+  const cargoLen = size.x - 0.22;
+  const cargoW = size.y - 0.08;
+  const cargoX = -0.07;
+  const cargoZ = topZ + cargoH / 2;
+
+  // lidar apoiado direto no topo do corpo
+  const lidarX = size.x / 2 - 0.08;
+  const headH = 0.035;
+  const headZ = topZ + headH / 2;
+
+  // cruz vermelha (topo e laterais da caixa de carga)
+  const red = 'PBRAppearance { baseColor 0.75 0.05 0.08 roughness 0.4 metalness 0 }';
+  const bar = (x, y, z, sx, sy, sz) =>
+    `Transform { translation ${r(x)} ${r(y)} ${r(z)} children [ Shape { appearance ${red} geometry Box { size ${r(sx)} ${r(sy)} ${r(sz)} } } ] }`;
+  const topCross = bar(0, 0, cargoH / 2 + 0.002, 0.10, 0.03, 0.004) + ' ' +
+                   bar(0, 0, cargoH / 2 + 0.0025, 0.03, 0.10, 0.005);
+  const sideCross = (s) =>
+    bar(0, s * (cargoW / 2 + 0.001), 0, 0.06, 0.002, 0.016) + ' ' +
+    bar(0, s * (cargoW / 2 + 0.00125), 0, 0.016, 0.0025, 0.05);
+>%
+  Robot {
+    translation IS translation
+    rotation IS rotation
+    name IS name
+    controller IS controller
+    controllerArgs IS controllerArgs
+    supervisor IS supervisor
+    model "Hospital delivery robot"
+    children [
+      # chassi
+      Transform {
+        translation 0 0 %<= r(bodyZ) >%
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor IS bodyColor
+              roughness 0.45
+              metalness 0.05
+            }
+            geometry Box {
+              size IS bodySize
+            }
+          }
+        ]
+      }
+      # caixa de carga com cruz vermelha
+      Transform {
+        translation %<= r(cargoX) >% 0 %<= r(cargoZ) >%
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.92 0.94 0.97
+              roughness 0.35
+              metalness 0
+            }
+            geometry Box {
+              size %<= r(cargoLen) >% %<= r(cargoW) >% %<= cargoH >%
+            }
+          }
+          %<= topCross >%
+          %<= sideCross(1) >%
+          %<= sideCross(-1) >%
+        ]
+      }
+      # roda esquerda
+      HingeJoint {
+        jointParameters HingeJointParameters {
+          axis 0 1 0
+          anchor %<= r(wheelX) >% %<= r(wheelY) >% %<= wheelR >%
+        }
+        device [
+          RotationalMotor {
+            name "left wheel motor"
+            maxVelocity 12
+            maxTorque 4
+            acceleration 20
+          }
+          PositionSensor {
+            name "left wheel sensor"
+          }
+        ]
+        endPoint Solid {
+          translation %<= r(wheelX) >% %<= r(wheelY) >% %<= wheelR >%
+          rotation 1 0 0 1.57079632679
+          children [
+            DEF WHEEL_SHAPE Shape {
+              appearance PBRAppearance {
+                baseColor 0.045 0.045 0.05
+                roughness 0.85
+                metalness 0
+              }
+              geometry DEF WHEEL_GEOMETRY Cylinder {
+                height %<= wheelW >%
+                radius %<= wheelR >%
+                subdivision 32
+              }
+            }
+          ]
+          name "left wheel"
+          boundingObject USE WHEEL_GEOMETRY
+          physics Physics {
+            density -1
+            mass 0.20
+          }
+        }
+      }
+      # roda direita
+      HingeJoint {
+        jointParameters HingeJointParameters {
+          axis 0 1 0
+          anchor %<= r(wheelX) >% %<= r(-wheelY) >% %<= wheelR >%
+        }
+        device [
+          RotationalMotor {
+            name "right wheel motor"
+            maxVelocity 12
+            maxTorque 4
+            acceleration 20
+          }
+          PositionSensor {
+            name "right wheel sensor"
+          }
+        ]
+        endPoint Solid {
+          translation %<= r(wheelX) >% %<= r(-wheelY) >% %<= wheelR >%
+          rotation 1 0 0 1.57079632679
+          children [
+            USE WHEEL_SHAPE
+          ]
+          name "right wheel"
+          boundingObject USE WHEEL_GEOMETRY
+          physics Physics {
+            density -1
+            mass 0.20
+          }
+        }
+      }
+      # caster frontal: esfera livre em BallJoint, rola em qualquer direcao
+      BallJoint {
+        jointParameters BallJointParameters {
+          anchor %<= r(casterX) >% 0 %<= casterR >%
+        }
+        endPoint Solid {
+          translation %<= r(casterX) >% 0 %<= casterR >%
+          children [
+            Shape {
+              appearance PBRAppearance {
+                baseColor 0.15 0.15 0.18
+                roughness 0.7
+                metalness 0.1
+              }
+              geometry DEF CASTER_GEOMETRY Sphere {
+                radius %<= casterR >%
+                subdivision 2
+              }
+            }
+          ]
+          name "front caster"
+          boundingObject USE CASTER_GEOMETRY
+          physics Physics {
+            density -1
+            mass 0.08
+          }
+        }
+      }
+      # cabecote do lidar, encostado no topo do corpo
+      Transform {
+        translation %<= r(lidarX) >% 0 %<= r(headZ) >%
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 0.04 0.04 0.05
+              roughness 0.25
+              metalness 0.4
+            }
+            geometry Cylinder {
+              height %<= headH >%
+              radius 0.045
+              subdivision 32
+            }
+          }
+        ]
+      }
+      Lidar {
+        translation %<= r(lidarX) >% 0 %<= r(headZ) >%
+        name "lidar"
+        horizontalResolution 181
+        fieldOfView 3.14159265359
+        numberOfLayers 1
+        near 0.05
+        minRange 0.08
+        maxRange 5.0
+        noise 0.005
+        resolution 0.01
+      }
+      Group {
+        children IS extensionSlot
+      }
+    ]
+    boundingObject Group {
+      children [
+        Transform {
+          translation 0 0 %<= r(bodyZ) >%
+          children [
+            Box {
+              size IS bodySize
+            }
+          ]
+        }
+        Transform {
+          translation %<= r(cargoX) >% 0 %<= r(cargoZ) >%
+          children [
+            Box {
+              size %<= r(cargoLen) >% %<= r(cargoW) >% %<= cargoH >%
+            }
+          ]
+        }
+      ]
+    }
+    physics Physics {
+      density -1
+      mass IS bodyMass
+      centerOfMass [
+        %<= r(comX) >% 0 %<= r(comZ) >%
+      ]
+    }
+  }
+}

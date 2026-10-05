@@ -1,0 +1,215 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "../protos/HospitalRobot.proto"
+
+WorldInfo {
+  title "Entrega hospitalar - desafio com carrinho"
+  info [
+    "Trajeto em L com obstáculo no segundo corredor"
+    "O carrinho pode ser movido manualmente durante a simulação"
+  ]
+  basicTimeStep 32
+  coordinateSystem "ENU"
+  contactProperties [
+    ContactProperties {
+      material1 "wheel"
+      material2 "floor"
+      coulombFriction 1.4
+    }
+    ContactProperties {
+      material1 "caster"
+      material2 "floor"
+      coulombFriction 0.08
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.349209 -0.153679 0.924369 3.88315
+  position 1.576 3.633 4.678
+  follow "hospital_robot"
+}
+Background {
+  skyColor [
+    0.86 0.91 0.97
+  ]
+}
+DirectionalLight {
+  direction -0.4 -0.5 -1
+  intensity 1.2
+  castShadows TRUE
+}
+Solid {
+  translation 0 0 -0.025
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.76 0.78 0.80
+        roughness 0.92
+        metalness 0
+      }
+      geometry Box {
+        size 6 5 0.05
+      }
+    }
+  ]
+  name "hospital floor"
+  contactMaterial "floor"
+  boundingObject Box {
+    size 6 5 0.05
+  }
+}
+Transform {
+  translation -1.8 -1 0.006
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.68 0.08 0.16
+        roughness 0.7
+        metalness 0
+      }
+      geometry Box {
+        size 0.55 0.55 0.012
+      }
+    }
+  ]
+}
+Transform {
+  translation 0.2 0.5 0.006
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.10 0.62 0.28
+        roughness 0.7
+        metalness 0
+      }
+      geometry Box {
+        size 0.55 0.55 0.012
+      }
+    }
+  ]
+}
+Solid {
+  translation -0.925 -1.50 0.25
+  children [
+    Shape {
+      appearance DEF WALL_APPEARANCE PBRAppearance {
+        baseColor 0.90 0.92 0.94
+        roughness 0.75
+        metalness 0
+      }
+      geometry Box {
+        size 3.15 0.08 0.50
+      }
+    }
+  ]
+  name "south wall"
+  boundingObject Box {
+    size 3.15 0.08 0.50
+  }
+}
+Solid {
+  translation -1.375 -0.50 0.25
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 2.25 0.08 0.50
+      }
+    }
+  ]
+  name "north wall first corridor"
+  boundingObject Box {
+    size 2.25 0.08 0.50
+  }
+}
+Solid {
+  translation -2.50 -1.00 0.25
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 0.08 1.08 0.50
+      }
+    }
+  ]
+  name "collection room end wall"
+  boundingObject Box {
+    size 0.08 1.08 0.50
+  }
+}
+Solid {
+  translation -0.25 0.25 0.25
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 0.08 1.50 0.50
+      }
+    }
+  ]
+  name "west wall second corridor"
+  boundingObject Box {
+    size 0.08 1.50 0.50
+  }
+}
+Solid {
+  translation 0.65 -0.25 0.25
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 0.08 2.50 0.50
+      }
+    }
+  ]
+  name "east wall second corridor"
+  boundingObject Box {
+    size 0.08 2.50 0.50
+  }
+}
+Solid {
+  translation 0.20 1.00 0.25
+  children [
+    Shape {
+      appearance USE WALL_APPEARANCE
+      geometry Box {
+        size 0.98 0.08 0.50
+      }
+    }
+  ]
+  name "laboratory end wall"
+  boundingObject Box {
+    size 0.98 0.08 0.50
+  }
+}
+Solid {
+  translation 0.20 -0.05 0.20
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.94 0.58 0.08
+        roughness 0.55
+        metalness 0.1
+      }
+      geometry Box {
+        size 0.56 0.26 0.40
+      }
+    }
+  ]
+  name "movable hospital cart"
+  boundingObject Box {
+    size 0.56 0.26 0.40
+  }
+  physics Physics {
+    density -1
+    mass 12
+  }
+}
+HospitalRobot {
+  translation -1.8 -1 0
+  rotation 0 0 1 0
+  name "hospital_robot"
+  controller "<extern>"
+  bodySize 0.42 0.28 0.16
+  bodyColor 0.12 0.48 0.82
+}
